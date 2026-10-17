@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}My Applications & Offers | Placement Intelligence{% endblock %}
+{% block page_title %}Candidate Application Lifecycle & Campus Offers{% endblock %}
+
+{% block content %}
+{% if student.offers %}
+  <div style="margin-bottom: 24px;">
+    {% for off in student.offers %}
+      <div class="card" style="border: 2px solid #22c55e; background: #f0fdf4; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 24px;">ðŸŽ‰</span>
+              <h3 style="font-size: 18px; font-weight: 800; color: #166534; margin: 0;">Official Campus Placement Offer</h3>
+              <span class="badge {% if off.status == 'Accepted' %}badge-success{% elif off.status == 'Declined' %}badge-danger{% else %}badge-warning{% endif %}">
+                {{ off.status }}
+              </span>
+            </div>
+            <p style="color: #15803d; font-size: 14px; margin-top: 6px;">
+              Congratulations! <b>{{ off.company_name }}</b> has officially offered you the position of <b>{{ off.job_title }}</b> with an annual compensation package of <b>{{ off.package_lpa }} LPA</b>.
+            </p>
+          </div>
+
+          {% if off.status == 'Offered' %}
+            <div style="display: flex; gap: 10px;">
+              <form method="POST" action="{{ url_for('student.offer_decision', offer_id=off.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="decision" value="accept">
+                <button type="submit" class="btn btn-primary" style="background: #16a34a; border-color: #16a34a;">
+                  âœ“ Accept Offer (Mark Placed)
+                </button>
+              </form>
+              <form method="POST" action="{{ url_for('student.offer_decision', offer_id=off.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="decision" value="decline">
+                <button type="submit" class="btn btn-outline btn-sm" style="color: #dc2626; border-color: #fca5a5;">
+                  Decline
+                </button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Submitted Drive Applications</h3>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Job Role</th>
+          <th>AI Match Score</th>
+          <th>Date Submitted</th>
+          <th>Hiring Funnel Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in applications %}
+          <tr>
+            <td><b>{{ a.job.company.name }}</b></td>
+            <td>{{ a.job.title }}</td>
+            <td><span class="badge badge-primary">{{ a.ai_match_score }}%</span></td>
+            <td>{{ a.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+              <span class="badge {% if a.status in ['Selected', 'Offer Received', 'Offer Accepted'] %}badge-success{% elif a.status == 'Rejected' %}badge-danger{% else %}badge-warning{% endif %}">
+                {{ a.status }}
+              </span>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No submitted applications yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

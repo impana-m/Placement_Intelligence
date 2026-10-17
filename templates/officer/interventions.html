@@ -1,0 +1,52 @@
+﻿{% extends "base.html" %}
+{% block title %}Student Interventions | Placement Office{% endblock %}
+{% block page_title %}Academic & Preparation Intervention Radar{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Intervention Tracking Radar</h3>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Candidate</th>
+          <th>USN & Dept</th>
+          <th>Trigger Reason</th>
+          <th>Severity</th>
+          <th>Prescribed Action</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inv in interventions %}
+          <tr>
+            <td><b>{{ inv.student.user.full_name }}</b></td>
+            <td>{{ inv.student.usn }} ({{ inv.student.department.code }})</td>
+            <td style="color: var(--danger); font-size: 12.5px;">{{ inv.trigger_reason }}</td>
+            <td><span class="badge badge-danger">{{ inv.severity }}</span></td>
+            <td style="font-size: 12.5px; color: #334155;">{{ inv.recommendation }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('officer.interventions') }}" style="display:flex; gap: 6px;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="intervention_id" value="{{ inv.id }}">
+                <select name="status" class="form-control" style="font-size: 11.5px; padding: 3px 6px;">
+                  <option value="Open" {% if inv.status == 'Open' %}selected{% endif %}>Open</option>
+                  <option value="In Progress" {% if inv.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                  <option value="Resolved" {% if inv.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                </select>
+                <button type="submit" class="btn btn-outline btn-sm">Update</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" style="text-align: center; color: var(--success); font-weight:700;">No open student interventions detected.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+﻿{% extends "base.html" %}
+{% block title %}Local Mock Interview | Placement Intelligence{% endblock %}
+{% block page_title %}Local Mock Interview Practice{% endblock %}
+
+{% block content %}
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Start a Practice Interview</h3><span class="badge badge-success">Local NLP</span></div>
+    <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:18px;">Questions are selected from a 120-question local bank. Responses are evaluated from relevance, technical terms, communication, structure and answer depth.</p>
+    <form method="POST" action="{{ url_for('interview.mock_start') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group"><label class="form-label">Target Role</label><select name="target_role" class="form-control"><option>Software Engineer</option><option>Data Analyst</option><option>Full-Stack Developer</option></select></div>
+      <div class="form-group"><label class="form-label">Interview Type</label><select name="interview_type" class="form-control"><option value="Technical">Technical</option><option value="HR">HR</option><option value="Behavioral">Behavioral</option><option value="Situational">Situational</option><option value="Communication">Communication Round</option><option value="Mixed">Mixed Placement Interview</option></select></div>
+      <div class="grid-2">
+        <div class="form-group"><label class="form-label">Difficulty</label><select name="difficulty" class="form-control"><option>All</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+        <div class="form-group"><label class="form-label">Questions</label><select name="question_count" class="form-control"><option>5</option><option selected>8</option><option>10</option><option>12</option><option>15</option></select></div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Start Mock Interview</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Your Interview History</h3><span class="badge badge-primary">{{ previous_sessions|length }}</span></div>
+    <div class="table-responsive"><table class="table"><thead><tr><th>Role</th><th>Type</th><th>Score</th><th></th></tr></thead><tbody>
+      {% for s in previous_sessions %}<tr><td><b>{{ s.target_role }}</b></td><td><span class="badge badge-neutral">{{ s.interview_type }}</span></td><td><span class="badge badge-primary">{{ s.overall_score }}%</span></td><td><a href="{{ url_for('interview.mock_result', session_id=s.id) }}" class="btn btn-outline btn-sm">Diagnostic</a></td></tr>
+      {% else %}<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;">No completed mock interviews yet.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+</div>
+{% endblock %}

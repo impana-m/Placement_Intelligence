@@ -1,0 +1,65 @@
+﻿{% extends "base.html" %}
+{% block title %}Candidate Pipeline | Recruiter Portal{% endblock %}
+{% block page_title %}Student Applicants Pipeline & AI Match Ranking{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h3 style="font-weight: 700; color: #1e293b;">Applied Student Candidates</h3>
+    <span class="badge badge-info">{{ applications|length }} Total Applications</span>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Applicant Name</th>
+        <th>USN</th>
+        <th>Applied Job</th>
+        <th>CGPA</th>
+        <th>AI Match Score</th>
+        <th>Current Status</th>
+        <th>Update Stage</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for app in applications %}
+      <tr>
+        <td><b>{{ app.student.user.full_name }}</b><br><small style="color: #64748b;">{{ app.student.user.email }}</small></td>
+        <td><code>{{ app.student.usn }}</code></td>
+        <td><b>{{ app.job.title }}</b></td>
+        <td><b>{{ app.student.cgpa }}</b></td>
+        <td><b style="color: var(--primary);">{{ app.match_score }}%</b></td>
+        <td>
+          {% if app.status == 'Applied' %}
+            <span class="badge badge-info">Applied</span>
+          {% elif app.status == 'Shortlisted' %}
+            <span class="badge badge-warning">Shortlisted</span>
+          {% elif app.status in ['Technical Interview', 'HR Interview', 'Selected'] %}
+            <span class="badge badge-success">{{ app.status }}</span>
+          {% else %}
+            <span class="badge badge-danger">{{ app.status }}</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" action="{{ url_for('recruiter.update_application_status', app_id=app.id) }}" style="display:flex; gap:6px;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select name="status" class="form-control" style="font-size: 12px; padding: 4px 8px;">
+              <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlist</option>
+              <option value="Technical Interview" {% if app.status == 'Technical Interview' %}selected{% endif %}>Technical Round</option>
+              <option value="HR Interview" {% if app.status == 'HR Interview' %}selected{% endif %}>HR Round</option>
+              <option value="Selected" {% if app.status == 'Selected' %}selected{% endif %}>Select & Offer</option>
+              <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Reject</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" style="text-align: center; color: #64748b;">No candidate applications received yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

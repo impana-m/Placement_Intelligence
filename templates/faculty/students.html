@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Department Students | Placement Intelligence{% endblock %}
+{% block page_title %}{{ department.name if department else 'Department' }} Student Roster{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h3 style="font-weight: 700; color: #1e293b;">Cohort Performance & Readiness Monitor</h3>
+    <a href="{{ url_for('faculty.interventions') }}" class="btn btn-primary btn-sm">+ Flag Intervention</a>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>USN</th>
+        <th>Sem</th>
+        <th>CGPA</th>
+        <th>Attendance</th>
+        <th>Placement Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td><b>{{ s.user.full_name }}</b><br><small style="color: #64748b;">{{ s.user.email }}</small></td>
+        <td><code>{{ s.usn }}</code></td>
+        <td>Sem {{ s.current_semester }}</td>
+        <td><b style="color: var(--primary);">{{ "%.2f"|format(s.cgpa) }}</b></td>
+        <td>{{ "%.1f"|format(s.attendance_percentage) }}%</td>
+        <td>
+          {% if s.placement_status == 'Placed' %}
+            <span class="badge badge-success">Placed</span>
+          {% elif s.placement_status == 'In Process' %}
+            <span class="badge badge-warning">In Process</span>
+          {% else %}
+            <span class="badge badge-danger">Not Placed</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{{ url_for('faculty.interventions') }}" class="btn btn-outline btn-sm">Recommend Skill Drill</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" style="text-align: center; color: #64748b;">No students found in department roster.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

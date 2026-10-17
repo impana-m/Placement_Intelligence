@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Mock Diagnostic Result | Placement Intelligence{% endblock %}
+{% block page_title %}Mock Interview Diagnostic{% endblock %}
+{% block actions %}<a href="{{ url_for('interview.download_mock_report', session_id=mock_session.id) }}" class="btn btn-outline btn-sm">Download Diagnostic PDF</a>{% endblock %}
+{% block content %}
+<div class="grid-4" style="margin-bottom:22px;">
+  <div class="stat-card"><div><div class="stat-value">{{ mock_session.overall_score }}%</div><div class="stat-label">Composite</div></div></div>
+  <div class="stat-card"><div><div class="stat-value">{{ mock_session.technical_score }}%</div><div class="stat-label">Technical</div></div></div>
+  <div class="stat-card"><div><div class="stat-value">{{ mock_session.communication_score }}%</div><div class="stat-label">Communication</div></div></div>
+  <div class="stat-card"><div><div class="stat-value">{{ mock_session.structure_score }}%</div><div class="stat-label">Structure</div></div></div>
+</div>
+<div class="grid-2" style="margin-bottom:22px;">
+  <div class="card"><div class="card-header"><h3 class="card-title">Strengths</h3></div>{% for s in (mock_session.strengths or []) %}<div style="padding:8px 0;font-size:13px;color:#334155;">✓ {{ s }}</div>{% else %}<p style="color:var(--text-muted);font-size:13px;">No strengths recorded.</p>{% endfor %}</div>
+  <div class="card"><div class="card-header"><h3 class="card-title">Improvement Areas</h3></div>{% for w in (mock_session.weaknesses or []) %}<div style="padding:8px 0;font-size:13px;color:#334155;">• {{ w }}</div>{% else %}<p style="color:var(--text-muted);font-size:13px;">No major weaknesses recorded.</p>{% endfor %}</div>
+</div>
+<div class="card"><div class="card-header"><h3 class="card-title">Prompt-by-Prompt Review</h3></div>
+  {% for item in mock_session.qa_items %}<div style="border-bottom:1px solid var(--border);padding:18px 0;"><div style="display:flex;justify-content:space-between;gap:10px;"><b>{{ loop.index }}. {{ item.question_text }}</b><span class="badge badge-primary">{{ item.question_score }}%</span></div><div style="margin-top:9px;padding:10px;background:#f8fafc;border-radius:8px;font-size:13px;"><b>Your answer:</b> {{ item.student_answer }}</div>{% if item.eval_breakdown %}<p style="font-size:12.5px;color:#475569;margin-top:8px;"><b>Feedback:</b> {{ item.eval_breakdown.feedback }}</p>{% endif %}</div>{% endfor %}
+</div>
+{% endblock %}

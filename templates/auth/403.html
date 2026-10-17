@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>403 Forbidden</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="display:flex; align-items:center; justify-content:center; height:100vh;">
+  <div class="card" style="max-width: 460px; text-align:center; padding: 40px;">
+    <h1 style="font-size: 48px; color: var(--danger); font-weight:800;">403</h1>
+    <h2 style="font-size: 20px; margin: 10px 0;">Access Forbidden</h2>
+    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Your user account does not hold authorization privileges for this restricted module.</p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Return to Portal</a>
+  </div>
+</body>
+</html>

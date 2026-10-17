@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard | Placement Intelligence{% endblock %}
+{% block page_title %}Career Readiness & Placement Dashboard{% endblock %}
+
+{% block actions %}
+  <a href="{{ url_for('student.download_student_report') }}" class="btn btn-outline btn-sm">Download Career PDF Dossier</a>
+{% endblock %}
+
+{% block content %}
+<div class="grid-4" style="margin-bottom: 24px;">
+  <div class="stat-card">
+    <div>
+      <div class="stat-value" style="color: var(--primary);">{{ readiness.overall_readiness }}%</div>
+      <div class="stat-label">Career Readiness</div>
+    </div>
+    <span class="badge {% if readiness.overall_readiness >= 75 %}badge-success{% else %}badge-warning{% endif %}">
+      {% if readiness.overall_readiness >= 75 %}Job Ready{% else %}Developing{% endif %}
+    </span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ student.cgpa }}</div>
+      <div class="stat-label">Academic CGPA</div>
+    </div>
+    <span class="badge badge-primary">{{ student.department.code }}</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ matched_jobs|length }}</div>
+      <div class="stat-label">Top Matched Drives</div>
+    </div>
+    <span class="badge badge-neutral">Active</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ roadmap_pct }}%</div>
+      <div class="stat-label">Roadmap Progress</div>
+    </div>
+    <span class="badge badge-success">{{ student.placement_status }}</span>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-top:24px;">
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Preparation Activity</h3><span class="badge badge-primary">Live from results</span></div>
+    <div class="grid-2">
+      <div><div class="stat-value">{{ qt_attempts|length }}</div><div class="stat-label">Recent QT Attempts</div></div>
+      <div><div class="stat-value">{{ mock_sessions|length }}</div><div class="stat-label">Recent Mock Interviews</div></div>
+      <div><div class="stat-value">{{ unread_notifications }}</div><div class="stat-label">Unread Notifications</div></div>
+      <div><div class="stat-value">{{ upcoming_interviews|length }}</div><div class="stat-label">Upcoming Interviews</div></div>
+    </div>
+    <div style="margin-top:14px;font-size:13px;color:#475569;">
+      {% if weak_topics %}<b>Topics to practice:</b> {{ weak_topics|join(', ') }}{% else %}<b>Practice status:</b> No weak QT topic detected in recent attempts.{% endif %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">Upcoming Interviews</h3></div>
+    {% for interview in upcoming_interviews %}
+      <div style="padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;"><b>{{ interview.round_name }}</b><br><span style="color:var(--text-muted);">{{ interview.scheduled_at.strftime('%d %b %Y, %I:%M %p') if interview.scheduled_at else 'Schedule pending' }}</span></div>
+    {% else %}<p style="font-size:13px;color:var(--text-muted);">No upcoming interviews scheduled.</p>{% endfor %}
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Career Readiness Pillars</h3>
+      <span class="badge badge-primary">Explainable AI</span>
+    </div>
+
+    <div class="pillar-row">
+      <span class="pillar-name">Academics (CGPA/Att)</span>
+      <div class="pillar-bar-bg"><div class="pillar-bar-fill" style="width: {{ readiness.pillars.academic }}%;"></div></div>
+      <span class="pillar-score">{{ readiness.pillars.academic }}%</span>
+    </div>
+
+    <div class="pillar-row">
+      <span class="pillar-name">Technical Skills Depth</span>
+      <div class="pillar-bar-bg"><div class="pillar-bar-fill" style="width: {{ readiness.pillars.technical }}%;"></div></div>
+      <span class="pillar-score">{{ readiness.pillars.technical }}%</span>
+    </div>
+
+    <div class="pillar-row">
+      <span class="pillar-name">Practical Projects</span>
+      <div class="pillar-bar-bg"><div class="pillar-bar-fill" style="width: {{ readiness.pillars.portfolio }}%;"></div></div>
+      <span class="pillar-score">{{ readiness.pillars.portfolio }}%</span>
+    </div>
+
+    <div class="pillar-row">
+      <span class="pillar-name">ATS Resume Completeness</span>
+      <div class="pillar-bar-bg"><div class="pillar-bar-fill" style="width: {{ readiness.pillars.resume }}%;"></div></div>
+      <span class="pillar-score">{{ readiness.pillars.resume }}%</span>
+    </div>
+
+    <div class="pillar-row">
+      <span class="pillar-name">Technical & Aptitude Tests</span>
+      <div class="pillar-bar-bg"><div class="pillar-bar-fill" style="width: {{ readiness.pillars.tests }}%;"></div></div>
+      <span class="pillar-score">{{ readiness.pillars.tests }}%</span>
+    </div>
+
+    <div class="pillar-row">
+      <span class="pillar-name">Mock Interview Readiness</span>
+      <div class="pillar-bar-bg"><div class="pillar-bar-fill" style="width: {{ readiness.pillars.interview }}%;"></div></div>
+      <span class="pillar-score">{{ readiness.pillars.interview }}%</span>
+    </div>
+
+    <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border);">
+      <h4 style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px;">Key Recommendations:</h4>
+      <ul style="padding-left: 18px; font-size: 13px; color: var(--text-main);">
+        {% for rec in readiness.recommendations[:2] %}
+          <li style="margin-bottom: 4px;">{{ rec }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Top AI Job Matches</h3>
+      <a href="{{ url_for('student.jobs_list') }}" style="font-size: 12px; color: var(--primary); text-decoration: none; font-weight:600;">View All Drives &rarr;</a>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      {% for item in matched_jobs[:3] %}
+        <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; background: #ffffff;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <h4 style="font-size: 14px; font-weight: 700; color: var(--dark);">{{ item.job.title }}</h4>
+              <span style="font-size: 12px; color: var(--text-muted);">{{ item.job.company.name }} • {{ item.job.location }} • {{ item.job.salary_package }}</span>
+            </div>
+            <div style="text-align: right;">
+              <span class="badge {% if item.match.overall_match >= 75 %}badge-success{% else %}badge-primary{% endif %}">
+                {{ item.match.overall_match }}% Match
+              </span>
+            </div>
+          </div>
+          <p style="font-size: 12px; color: #475569; margin-top: 8px; font-style: italic;">
+            "{{ item.match.explanation }}"
+          </p>
+          <div style="margin-top: 10px; display: flex; gap: 8px;">
+            <a href="{{ url_for('student.skill_gap_analysis', job_id=item.job.id) }}" class="btn btn-outline btn-sm">Diagnose Skill Gap</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

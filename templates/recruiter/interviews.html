@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Interview Schedule | Recruiter Portal{% endblock %}
+{% block page_title %}Scheduled Campus Candidate Interviews{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 20px;">Scheduled Interview Roster</h3>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Candidate Name</th>
+        <th>Job Role</th>
+        <th>Round</th>
+        <th>Scheduled Time</th>
+        <th>Meeting / Venue</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inv in interviews %}
+      <tr>
+        <td><b>{{ inv.student.user.full_name }}</b><br><small style="color: #64748b;">{{ inv.student.usn }}</small></td>
+        <td><b>{{ inv.application.job.title if inv.application and inv.application.job else 'Campus Role' }}</b></td>
+        <td><span class="badge badge-info">{{ inv.round_name }}</span></td>
+        <td>{{ inv.scheduled_at.strftime('%Y-%m-%d %H:%M') if inv.scheduled_at else 'TBD' }}</td>
+        <td><code>{{ inv.location_or_link }}</code></td>
+        <td>
+          {% if inv.result == 'Passed' %}
+            <span class="badge badge-success">Passed</span>
+          {% elif inv.result == 'Failed' %}
+            <span class="badge badge-danger">Failed</span>
+          {% else %}
+            <span class="badge badge-warning">Pending</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" style="text-align: center; color: #64748b;">No candidate interviews scheduled.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

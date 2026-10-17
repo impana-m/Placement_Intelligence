@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Student Directory | Placement Office{% endblock %}
+{% block page_title %}Candidate Cohort Directory{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Enrolled Placement Candidates</h3>
+    <div style="display:flex; gap: 8px;">
+      <a href="{{ url_for('officer.students') }}" class="btn btn-outline btn-sm">All Departments</a>
+      {% for d in departments %}
+        <a href="{{ url_for('officer.students', dept=d.code) }}" class="btn btn-outline btn-sm">{{ d.code }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>USN</th>
+          <th>Department</th>
+          <th>CGPA</th>
+          <th>Placement Status</th>
+          <th>Skills Verified</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+          <tr>
+            <td><b>{{ s.user.full_name }}</b></td>
+            <td>{{ s.usn }}</td>
+            <td><span class="badge badge-neutral">{{ s.department.code }}</span></td>
+            <td><b>{{ s.cgpa }}</b></td>
+            <td>
+              <span class="badge {% if s.placement_status == 'Placed' %}badge-success{% else %}badge-warning{% endif %}">
+                {{ s.placement_status }}
+              </span>
+            </td>
+            <td>{{ s.student_skills|length }} Skills</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No students found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

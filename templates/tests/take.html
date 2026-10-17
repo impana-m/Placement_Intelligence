@@ -1,0 +1,56 @@
+﻿{% extends "base.html" %}
+{% block title %}{{ test.title }} | Assessment{% endblock %}
+{% block page_title %}{{ test.title }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;padding:12px 14px;background:#f8fafc;border-radius:10px;">
+    <div>
+      <b>{{ selected_count }} questions</b>
+      <span style="color:var(--text-muted);font-size:12px;"> â€¢ {{ difficulty }} difficulty â€¢ {{ test.topic }}</span>
+    </div>
+    <div id="timer" class="badge badge-danger" style="font-size:14px;min-width:100px;text-align:center;">Loading...</div>
+  </div>
+
+  <form id="qt-form" method="POST" action="{{ url_for('test.take_test', test_id=test.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% for q in questions %}
+      <div style="margin-bottom:24px;padding:20px;border:1px solid var(--border);border-radius:12px;background:white;">
+        <div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:10px;">
+          <h4 style="font-size:14px;font-weight:700;">Q{{ loop.index }}. {{ q.question_text }}</h4>
+          <span class="badge badge-neutral">{{ q.difficulty }} â€¢ {{ q.marks }} mark{% if q.marks != 1 %}s{% endif %}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:13.5px;">
+          <label><input type="radio" name="q_{{ q.id }}" value="A"> <b>A.</b> {{ q.option_a }}</label>
+          <label><input type="radio" name="q_{{ q.id }}" value="B"> <b>B.</b> {{ q.option_b }}</label>
+          <label><input type="radio" name="q_{{ q.id }}" value="C"> <b>C.</b> {{ q.option_c }}</label>
+          <label><input type="radio" name="q_{{ q.id }}" value="D"> <b>D.</b> {{ q.option_d }}</label>
+        </div>
+      </div>
+    {% endfor %}
+    <button id="submit-btn" type="submit" class="btn btn-primary" style="width:100%;padding:13px;">Submit & Grade Assessment</button>
+  </form>
+</div>
+
+<script>
+(function () {
+  let remaining = {{ duration_seconds }};
+  const timer = document.getElementById('timer');
+  const form = document.getElementById('qt-form');
+  let submitted = false;
+  function tick() {
+    const mins = Math.floor(remaining / 60);
+    const secs = remaining % 60;
+    timer.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    if (remaining <= 0 && !submitted) {
+      submitted = true;
+      form.submit();
+      return;
+    }
+    remaining -= 1;
+    setTimeout(tick, 1000);
+  }
+  tick();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Placement Notifications | Student{% endblock %}
+{% block page_title %}Placement Drives & Institutional Notifications{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h3 style="font-weight: 700; color: #1e293b;">Notification Radar</h3>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="badge badge-primary">{{ unread_count }} Unread</span>
+      {% if unread_count %}<form method="POST" action="{{ url_for('student.mark_all_notifications_read') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline btn-sm" type="submit">Mark all read</button></form>{% endif %}
+    </div>
+  </div>
+
+  {% for n in notifications %}
+    <div style="border-left: 4px solid var(--primary); background: #f8fafc; padding: 16px; border-radius: 4px; margin-bottom: 14px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <b style="font-size: 15px; color: #0f172a;">{{ n.title }}</b>
+        <span style="font-size: 11px; color: #64748b;">{{ n.created_at.strftime('%Y-%m-%d %H:%M') if n.created_at else '' }}</span>
+      </div>
+      <p style="font-size: 13.5px; color: #334155; margin-bottom: 8px;">{{ n.message }}</p>
+      <div style="display:flex;gap:8px;align-items:center;">
+        {% if n.link %}<a href="{{ n.link }}" class="btn btn-outline btn-sm">View Details →</a>{% endif %}
+        {% if not n.is_read %}
+          <form method="POST" action="{{ url_for('student.mark_notification_read', notification_id=n.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-outline btn-sm" type="submit">Mark read</button></form>
+        {% else %}<span class="badge badge-neutral">Read</span>{% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div style="text-align: center; color: #64748b; padding: 30px;">
+      No notifications yet. You are completely up to date!
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Placement Officer Intelligence | Institutional Hub{% endblock %}
+{% block page_title %}Office of Career Development & Placement Intelligence{% endblock %}
+
+{% block actions %}
+  <a href="{{ url_for('officer.download_institutional_report') }}" class="btn btn-primary btn-sm">Generate Institutional PDF Audit</a>
+{% endblock %}
+
+{% block content %}
+<div class="grid-4" style="margin-bottom: 24px;">
+  <div class="stat-card">
+    <div>
+      <div class="stat-value" style="color: var(--primary);">{{ placement_rate }}%</div>
+      <div class="stat-label">Overall Placement Rate</div>
+    </div>
+    <span class="badge badge-success">{{ placed_students }}/{{ total_students }} Placed</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ active_jobs }}</div>
+      <div class="stat-label">Active Drives</div>
+    </div>
+    <span class="badge badge-neutral">{{ companies_count }} Companies</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ total_offers }}</div>
+      <div class="stat-label">Offers Issued</div>
+    </div>
+    <span class="badge badge-primary">2026 Batch</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value" style="color: var(--danger);">{{ interventions|length }}</div>
+      <div class="stat-label">Active Interventions</div>
+    </div>
+    <span class="badge badge-danger">Needs Mentorship</span>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Institutional Placement Funnel</h3>
+      <span class="badge badge-primary">7-Stage Pipeline</span>
+    </div>
+    <canvas id="funnelChart" height="200"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Skill Demand Heatmap (Active Jobs)</h3>
+      <span class="badge badge-success">Recruiter Demand</span>
+    </div>
+    <canvas id="skillDemandChart" height="200"></canvas>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctxFunnel = document.getElementById('funnelChart').getContext('2d');
+    new Chart(ctxFunnel, {
+      type: 'bar',
+      data: {
+        labels: {{ funnel.stages | tojson }},
+        datasets: [{
+          label: 'Candidates in Stage',
+          data: {{ funnel.counts | tojson }},
+          backgroundColor: '#2563eb',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+      }
+    });
+
+    const ctxSkill = document.getElementById('skillDemandChart').getContext('2d');
+    new Chart(ctxSkill, {
+      type: 'bar',
+      data: {
+        labels: {{ skill_demand.skills | tojson }},
+        datasets: [{
+          label: 'Demand Weight',
+          data: {{ skill_demand.demand_scores | tojson }},
+          backgroundColor: '#0f172a',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: { legend: { display: false } }
+      }
+    });
+  });
+</script>
+{% endblock %}

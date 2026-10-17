@@ -1,0 +1,69 @@
+﻿{% extends "base.html" %}
+{% block title %}Campus Job Drives | Placement Officer{% endblock %}
+{% block page_title %}Campus Placement Recruitment Drives{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h3 style="font-weight: 700; color: #1e293b;">Active Recruiter Job Postings</h3>
+    <span class="badge badge-info">{{ jobs|length }} Total Drives</span>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Job Role</th>
+        <th>Package</th>
+        <th>Min CGPA</th>
+        <th>Required Skills</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in jobs %}
+      <tr>
+        <td><b>{{ j.company.name }}</b><br><small style="color: #64748b;">{{ j.location }}</small></td>
+        <td><b>{{ j.title }}</b><br><small style="color: #64748b;">{{ j.role_type }}</small></td>
+        <td><b style="color: var(--success);">{{ j.salary_package }}</b></td>
+        <td><code>{{ j.min_cgpa }} CGPA</code></td>
+        <td><span style="font-size: 12px; color: #475569;">{{ j.required_skills }}</span></td>
+        <td>
+          {% if j.status == 'Active' %}
+            <span class="badge badge-success">Active Drive</span>
+          {% elif j.status == 'Paused' %}
+            <span class="badge badge-warning">Paused</span>
+          {% elif j.status == 'Closed' %}
+            <span class="badge badge-danger">Closed</span>
+          {% else %}
+            <span class="badge badge-neutral">Draft</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" action="{{ url_for('officer.jobs') }}" style="display:inline;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="job_id" value="{{ j.id }}">
+            <input type="hidden" name="action" value="toggle_status">
+            {% if j.status == 'Active' %}
+              <button type="submit" class="btn btn-outline btn-sm">Pause Drive</button>
+            {% elif j.status == 'Paused' %}
+              <button type="submit" class="btn btn-primary btn-sm">Activate Drive</button>
+            {% elif j.status == 'Closed' %}
+              <span style="font-size:12px;color:#64748b;">Closed â€” create a new drive</span>
+            {% else %}
+              <span style="font-size:12px;color:#64748b;">Draft â€” publish when ready</span>
+            {% endif %}
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" style="text-align: center; color: #64748b;">No campus recruitment drives found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

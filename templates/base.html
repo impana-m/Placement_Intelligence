@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Placement & Career Intelligence{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="app-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">PI</div>
+      <div class="brand-text">
+        <h2>PlacementIntel</h2>
+        <span>Intelligence Platform</span>
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      {% if session.get('role') == 'student' %}
+        <li class="menu-category">Student Command</li>
+        <li class="menu-item {% if request.endpoint == 'student.dashboard' %}active{% endif %}">
+          <a href="{{ url_for('student.dashboard') }}">Dashboard</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.profile' %}active{% endif %}">
+          <a href="{{ url_for('student.profile') }}">Profile & Skills</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.resume_management' %}active{% endif %}">
+          <a href="{{ url_for('student.resume_management') }}">Resume Intelligence</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.resume_builder' %}active{% endif %}">
+          <a href="{{ url_for('student.resume_builder') }}">Interactive ATS Builder</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.jobs_list' %}active{% endif %}">
+          <a href="{{ url_for('student.jobs_list') }}">AI Job Matching</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.applications_list' %}active{% endif %}">
+          <a href="{{ url_for('student.applications_list') }}">My Applications & Offers</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.notifications' %}active{% endif %}">
+          <a href="{{ url_for('student.notifications') }}">Drive Notifications</a>
+        </li>
+
+        <li class="menu-category">Preparation & AI</li>
+        <li class="menu-item {% if request.endpoint == 'test.list_tests' %}active{% endif %}">
+          <a href="{{ url_for('test.list_tests') }}">Aptitude & Tech Tests</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'interview.mock_start' %}active{% endif %}">
+          <a href="{{ url_for('interview.mock_start') }}">Local Mock Interview</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.simulator' %}active{% endif %}">
+          <a href="{{ url_for('student.simulator') }}">What-If Simulator</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'student.roadmap' %}active{% endif %}">
+          <a href="{{ url_for('student.roadmap') }}">Career Roadmap</a>
+        </li>
+
+      {% elif session.get('role') == 'officer' %}
+        <li class="menu-category">Placement Office</li>
+        <li class="menu-item {% if request.endpoint == 'officer.dashboard' %}active{% endif %}">
+          <a href="{{ url_for('officer.dashboard') }}">Executive Intelligence</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'officer.students' %}active{% endif %}">
+          <a href="{{ url_for('officer.students') }}">Student Directory</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'officer.jobs' %}active{% endif %}">
+          <a href="{{ url_for('officer.jobs') }}">Campus Job Drives</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'officer.broadcast' %}active{% endif %}">
+          <a href="{{ url_for('officer.broadcast') }}">Broadcast Radar</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'officer.interventions' %}active{% endif %}">
+          <a href="{{ url_for('officer.interventions') }}">Student Interventions</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'officer.analytics' %}active{% endif %}">
+          <a href="{{ url_for('officer.analytics') }}">Placement Analytics</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'officer.reports' %}active{% endif %}">
+          <a href="{{ url_for('officer.reports') }}">Executive PDF Hub</a>
+        </li>
+
+      {% elif session.get('role') == 'faculty' %}
+        <li class="menu-category">Department Hub</li>
+        <li class="menu-item {% if request.endpoint == 'faculty.dashboard' %}active{% endif %}">
+          <a href="{{ url_for('faculty.dashboard') }}">Cohort Dashboard</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'faculty.students' %}active{% endif %}">
+          <a href="{{ url_for('faculty.students') }}">Student Roster</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'faculty.curriculum' %}active{% endif %}">
+          <a href="{{ url_for('faculty.curriculum') }}">Curriculum Alignment</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'faculty.interventions' %}active{% endif %}">
+          <a href="{{ url_for('faculty.interventions') }}">Interventions Log</a>
+        </li>
+
+      {% elif session.get('role') == 'recruiter' %}
+        <li class="menu-category">Talent Acquisition</li>
+        <li class="menu-item {% if request.endpoint == 'recruiter.dashboard' %}active{% endif %}">
+          <a href="{{ url_for('recruiter.dashboard') }}">Hiring Dashboard</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'recruiter.create_job' %}active{% endif %}">
+          <a href="{{ url_for('recruiter.create_job') }}">Post Campus Job</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'recruiter.jobs' %}active{% endif %}">
+          <a href="{{ url_for('recruiter.jobs') }}">Active Job Drives</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'recruiter.applicants' %}active{% endif %}">
+          <a href="{{ url_for('recruiter.applicants') }}">Candidate Pipeline</a>
+        </li>
+        <li class="menu-item {% if request.endpoint == 'recruiter.interviews' %}active{% endif %}">
+          <a href="{{ url_for('recruiter.interviews') }}">Scheduled Interviews</a>
+        </li>
+      {% endif %}
+    </ul>
+
+    <div class="sidebar-user">
+      <div class="user-info">
+        <span class="user-name">{{ session.get('full_name', 'User') }}</span>
+        <span class="user-role-badge">{{ session.get('role', 'Guest') }}</span>
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-outline btn-sm btn-sidebar-logout">Logout</a>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" onclick="document.querySelector('.app-sidebar').classList.remove('open'); this.classList.remove('active')"></div>
+
+  <!-- Main Content Wrapper -->
+  <div class="app-main">
+    <header class="top-navbar">
+      <button class="hamburger-btn" onclick="document.querySelector('.app-sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('active')" aria-label="Toggle menu">☰</button>
+      <div class="navbar-title">
+        <h1>{% block page_title %}Placement & Career Intelligence{% endblock %}</h1>
+      </div>
+      <div class="navbar-actions">
+        {% block actions %}{% endblock %}
+      </div>
+    </header>
+
+    <main class="content-body">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+    {% block scripts %}{% endblock %}
+  </div>
+</body>
+</html>

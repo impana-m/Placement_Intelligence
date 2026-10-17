@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Test Result | Placement Intelligence{% endblock %}
+{% block page_title %}Assessment Diagnostic Scorecard{% endblock %}
+
+{% block content %}
+<div class="grid-4" style="margin-bottom:20px;">
+  <div class="stat-card"><div><div class="stat-value">{{ attempt.percentage }}%</div><div class="stat-label">Overall Accuracy</div></div></div>
+  <div class="stat-card"><div><div class="stat-value">{{ correct_count }}/{{ attempt.total_marks }}</div><div class="stat-label">Marks / Total</div></div></div>
+  <div class="stat-card"><div><div class="stat-value">{{ (elapsed_seconds // 60) }}m {{ (elapsed_seconds % 60) }}s</div><div class="stat-label">Time Used</div></div></div>
+  <div class="stat-card"><div><div class="stat-value">{% if attempt.passed %}PASS{% else %}REVIEW{% endif %}</div><div class="stat-label">Benchmark</div></div></div>
+</div>
+
+{% if timed_out %}<div class="alert alert-warning">The timer expired. The answers submitted before expiry were graded.</div>{% endif %}
+
+<div class="grid-2" style="margin-bottom:20px;">
+  <div class="card"><div class="card-header"><h3 class="card-title">Topic Performance</h3></div>
+    {% for topic, stats in topic_stats.items() %}
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;"><span>{{ topic }}</span><b>{{ stats.correct }}/{{ stats.total }} ({{ ((stats.correct / stats.total) * 100)|round(1) if stats.total else 0 }}%)</b></div>
+    {% endfor %}
+  </div>
+  <div class="card"><div class="card-header"><h3 class="card-title">Preparation Insight</h3></div>
+    {% set weak = namespace(found=false) %}
+    {% for topic, stats in topic_stats.items() %}{% if stats.total and (stats.correct / stats.total) < 0.6 %}{% set weak.found=true %}<p style="font-size:13px;color:#475569;margin-bottom:7px;">Practice more <b>{{ topic }}</b>.</p>{% endif %}{% endfor %}
+    {% if not weak.found %}<p style="font-size:13px;color:#475569;">No major weak topic was detected in this attempt. Try a harder difficulty next.</p>{% endif %}
+  </div>
+</div>
+
+<div class="card"><div class="card-header"><h3 class="card-title">Answer Review</h3></div>
+  {% for item in breakdown %}
+    <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;gap:10px;"><b style="font-size:13.5px;">Q{{ loop.index }}. {{ item.question.question_text }}</b><span class="badge {% if item.correct %}badge-success{% else %}badge-danger{% endif %}">{% if item.correct %}Correct{% else %}Review{% endif %}</span></div>
+      <div style="font-size:12.5px;color:#475569;margin-top:7px;">Your answer: <b>{{ item.selected or 'Not answered' }}</b> • Correct: <b>{{ item.question.correct_option }}</b></div>
+      <div style="font-size:12.5px;color:#475569;margin-top:6px;">{{ item.question.explanation }}</div>
+    </div>
+  {% endfor %}
+  <div style="margin-top:18px;"><a href="{{ url_for('test.list_tests') }}" class="btn btn-outline">Back to Practice Hub</a> <a href="{{ url_for('test.take_test', test_id=test.id) }}" class="btn btn-primary">Retake with New Questions</a></div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Curriculum Intelligence | Placement Intelligence{% endblock %}
+{% block page_title %}Industry-Curriculum Skill Alignment Matrix{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+  <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;">Curriculum vs Industry Skill Gap Analysis</h3>
+  <p style="color: #64748b; font-size: 14px;">This module maps real-time recruiter demand against classroom skill benchmarks to suggest course curriculum updates.</p>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Skill & Technology Domain</th>
+        <th>Industry Recruiter Demand</th>
+        <th>Department Cohort Proficiency</th>
+        <th>Curriculum Action Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in skills %}
+      <tr>
+        <td><b>{{ s.name }}</b></td>
+        <td>
+          {% if s.industry_demand == 'Critical' %}
+            <span class="badge badge-danger">Critical Demand</span>
+          {% else %}
+            <span class="badge badge-warning">High Demand</span>
+          {% endif %}
+        </td>
+        <td><b style="color: var(--primary);">{{ s.dept_proficiency }}</b></td>
+        <td>
+          {% if s.status == 'Strong Alignment' %}
+            <span class="badge badge-success">✓ {{ s.status }}</span>
+          {% elif s.status == 'Needs Lab Focus' %}
+            <span class="badge badge-warning">⚡ {{ s.status }}</span>
+          {% else %}
+            <span class="badge badge-danger">⚠️ {{ s.status }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

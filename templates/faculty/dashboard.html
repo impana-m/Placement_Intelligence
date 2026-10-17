@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Department Coordinator Dashboard | Placement Intelligence{% endblock %}
+{% block page_title %}{{ department.name }} ({{ department.code }}) Cohort Intelligence{% endblock %}
+
+{% block content %}
+<div class="grid-4" style="margin-bottom: 24px;">
+  <div class="stat-card">
+    <div>
+      <div class="stat-value" style="color: var(--primary);">{{ placement_rate }}%</div>
+      <div class="stat-label">Department Placement</div>
+    </div>
+    <span class="badge badge-success">{{ placed_students }}/{{ total_students }} Placed</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ avg_cgpa }}</div>
+      <div class="stat-label">Cohort Mean CGPA</div>
+    </div>
+    <span class="badge badge-neutral">Batch 2026</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value" style="color: var(--danger);">{{ interventions|length }}</div>
+      <div class="stat-label">Intervention Cases</div>
+    </div>
+    <span class="badge badge-danger">Attention Needed</span>
+  </div>
+
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ total_students }}</div>
+      <div class="stat-label">Total Department Cohort</div>
+    </div>
+    <span class="badge badge-primary">Active</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Department Student Performance Roster</h3>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>USN</th>
+          <th>CGPA</th>
+          <th>Attendance</th>
+          <th>Status</th>
+          <th>Verified Skills</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+          <tr>
+            <td><b>{{ s.user.full_name }}</b></td>
+            <td>{{ s.usn }}</td>
+            <td><b>{{ s.cgpa }}</b></td>
+            <td>{{ s.attendance_percentage }}%</td>
+            <td>
+              <span class="badge {% if s.placement_status == 'Placed' %}badge-success{% else %}badge-warning{% endif %}">
+                {{ s.placement_status }}
+              </span>
+            </td>
+            <td>{{ s.student_skills|length }} Verified</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

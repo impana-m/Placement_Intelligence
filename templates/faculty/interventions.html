@@ -1,0 +1,72 @@
+﻿{% extends "base.html" %}
+{% block title %}Faculty Interventions | Placement Intelligence{% endblock %}
+{% block page_title %}Academic & Skill Intervention Management{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+  <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 16px;">Log New Student Intervention</h3>
+  <form method="POST" action="{{ url_for('faculty.interventions') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="form-group">
+        <label class="form-label">Select Student</label>
+        <select name="student_id" class="form-control" required>
+          <option value="">-- Choose Student --</option>
+          {% for s in students %}
+            <option value="{{ s.id }}">{{ s.user.full_name }} ({{ s.usn }}) - CGPA: {{ s.cgpa }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Trigger / Performance Concern</label>
+        <input type="text" name="reason" class="form-control" placeholder="e.g., Low Aptitude score & Docker skill gap" required>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 12px;">
+      <label class="form-label">Recommended Action Plan</label>
+      <input type="text" name="action_plan" class="form-control" placeholder="e.g., 2-week DSA bootcamp & mandatory mock interview practice">
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="margin-top: 8px;">Log Intervention</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 16px;">Active Department Interventions</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Student Name</th>
+        <th>USN</th>
+        <th>Trigger Reason</th>
+        <th>Recommended Action</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in interventions %}
+      <tr>
+        <td><b>{{ item.student.user.full_name }}</b></td>
+        <td><code>{{ item.student.usn }}</code></td>
+        <td>{{ item.trigger_reason }}</td>
+        <td>{{ item.recommendation }}</td>
+        <td>
+          {% if item.status == 'Open' %}
+            <span class="badge badge-danger">Open</span>
+          {% else %}
+            <span class="badge badge-success">Resolved</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" style="text-align: center; color: #64748b;">No active department interventions recorded.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

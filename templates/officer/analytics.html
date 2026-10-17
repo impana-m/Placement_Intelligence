@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Institutional Analytics | Placement Officer{% endblock %}
+{% block page_title %}Placement & Career Intelligence Analytics{% endblock %}
+
+{% block content %}
+<div class="metrics-grid">
+  <div class="card metric-card">
+    <div class="metric-value" style="color: var(--primary);">{{ funnel.total_students }}</div>
+    <div class="metric-label">Total Registered Cohort</div>
+  </div>
+  <div class="card metric-card">
+    <div class="metric-value" style="color: var(--info);">{{ funnel.eligible }}</div>
+    <div class="metric-label">Placement Eligible</div>
+  </div>
+  <div class="card metric-card">
+    <div class="metric-value" style="color: var(--warning);">{{ funnel.applications }}</div>
+    <div class="metric-label">Total Applications Submitted</div>
+  </div>
+  <div class="card metric-card">
+    <div class="metric-value" style="color: var(--success);">{{ funnel.offers }}</div>
+    <div class="metric-label">Total Confirmed Offers</div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+  <div class="card">
+    <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 16px;">Recruiter Skill Demand Ranking</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Skill Name</th>
+          <th>Demand Count</th>
+          <th>Percentage Share</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in skill_demand %}
+        <tr>
+          <td><b>{{ s.skill }}</b></td>
+          <td>{{ s.count }} Drives</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="flex:1; background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                <div style="width: {{ s.percentage }}%; background: var(--primary); height: 100%;"></div>
+              </div>
+              <span style="font-size: 12px; font-weight: 700;">{{ s.percentage }}%</span>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 16px;">Department Placement Rate Comparison</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Total</th>
+          <th>Placed</th>
+          <th>Placement %</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in dept_comparison %}
+        <tr>
+          <td><b>{{ d.department }}</b></td>
+          <td>{{ d.total }}</td>
+          <td>{{ d.placed }}</td>
+          <td><b style="color: var(--success);">{{ d.placement_rate }}%</b></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

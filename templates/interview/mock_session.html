@@ -1,0 +1,31 @@
+﻿{% extends "base.html" %}
+{% block title %}Mock Interview Session | Practice{% endblock %}
+{% block page_title %}Mock Interview â€” {{ mock_session.target_role }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:820px;margin:0 auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;">
+    <span class="badge badge-primary">Question {{ current_index + 1 }} of {{ total_questions }}</span>
+    <span class="badge badge-neutral">{{ current_item.category }} â€¢ {{ current_item.difficulty }}</span>
+  </div>
+  <div style="height:7px;background:#e2e8f0;border-radius:20px;margin-bottom:22px;"><div style="width:{{ ((current_index + 1) / total_questions * 100)|round(0) }}%;height:100%;background:var(--primary);border-radius:20px;"></div></div>
+  <h3 style="font-size:19px;line-height:1.5;margin-bottom:14px;">{{ current_item.question_text }}</h3>
+  <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px;">Take about 2â€“3 minutes. Give a specific answer with reasoning, examples or outcomes where appropriate.</p>
+  <form method="POST" id="interview-form" action="{{ url_for('interview.mock_session', session_id=mock_session.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <textarea name="ans_{{ current_item.id }}" id="answer" class="form-control" style="min-height:220px;" placeholder="Type your answer here..." required></textarea>
+    <input type="hidden" name="time_taken" id="time_taken" value="0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;">
+      <span id="timer" class="badge badge-neutral">03:00</span>
+      <button type="submit" class="btn btn-primary">{% if current_index + 1 == total_questions %}Finish Interview{% else %}Save & Next Question{% endif %}</button>
+    </div>
+  </form>
+</div>
+<script>
+(function(){
+  let remaining={{ question_seconds }}; const started=Date.now(); const timer=document.getElementById('timer'); const form=document.getElementById('interview-form'); const hidden=document.getElementById('time_taken');
+  function tick(){ const m=Math.floor(remaining/60), s=remaining%60; timer.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; if(remaining<=0){hidden.value=Math.round((Date.now()-started)/1000); form.submit();return;} remaining--;setTimeout(tick,1000); }
+  form.addEventListener('submit',function(){hidden.value=Math.round((Date.now()-started)/1000);}); tick();
+})();
+</script>
+{% endblock %}

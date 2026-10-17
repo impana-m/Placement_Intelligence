@@ -1,0 +1,92 @@
+﻿{% extends "base.html" %}
+{% block title %}Recruiter Dashboard | Placement Intelligence{% endblock %}
+{% block page_title %}{{ company.name }} Corporate Recruitment Dashboard{% endblock %}
+
+{% block actions %}
+  <a href="{{ url_for('recruiter.create_job') }}" class="btn btn-primary btn-sm">+ Post Campus Opening</a>
+{% endblock %}
+
+{% block content %}
+<div class="grid-4" style="margin-bottom: 24px;">
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ jobs|length }}</div>
+      <div class="stat-label">Active Drives</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div>
+      <div class="stat-value" style="color: var(--primary);">{{ applications|length }}</div>
+      <div class="stat-label">Total Applicants</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div>
+      <div class="stat-value" style="color: var(--success);">{{ shortlisted|length }}</div>
+      <div class="stat-label">Shortlisted Candidates</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div>
+      <div class="stat-value">{{ interviews|length }}</div>
+      <div class="stat-label">Scheduled Interviews</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Applicant Pipeline & AI Matching Benchmarks</h3>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Candidate</th>
+          <th>Role Applied</th>
+          <th>CGPA</th>
+          <th>AI Match Score</th>
+          <th>Current Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+          <tr>
+            <td>
+              <b>{{ app.student.user.full_name }}</b><br>
+              <span style="font-size: 11.5px; color: var(--text-muted);">{{ app.student.usn }} ({{ app.student.department.code }})</span>
+            </td>
+            <td>{{ app.job.title }}</td>
+            <td><b>{{ app.student.cgpa }}</b></td>
+            <td><span class="badge badge-primary">{{ app.ai_match_score }}% Match</span></td>
+            <td>
+              <span class="badge {% if app.status in ['Selected', 'Offer Accepted'] %}badge-success{% else %}badge-warning{% endif %}">
+                {{ app.status }}
+              </span>
+            </td>
+            <td>
+              <form method="POST" action="{{ url_for('recruiter.update_application_status', app_id=app.id) }}" style="display:flex; gap: 6px;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="status" class="form-control" style="font-size: 12px; padding: 4px 6px;">
+                  <option value="Applied" {% if app.status == 'Applied' %}selected{% endif %}>Applied</option>
+                  <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+                  <option value="Technical Interview" {% if app.status == 'Technical Interview' %}selected{% endif %}>Tech Interview</option>
+                  <option value="HR Interview" {% if app.status == 'HR Interview' %}selected{% endif %}>HR Interview</option>
+                  <option value="Selected" {% if app.status == 'Selected' %}selected{% endif %}>Selected & Offer</option>
+                  <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+                <button type="submit" class="btn btn-outline btn-sm">Save</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No candidates have applied yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

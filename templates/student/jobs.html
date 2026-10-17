@@ -1,0 +1,67 @@
+﻿{% extends "base.html" %}
+{% block title %}AI Job Matching | Placement Intelligence{% endblock %}
+{% block page_title %}Campus Placement Drives & AI Match Engine{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Active Company Placement Drives</h3>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 16px;">
+    {% for item in jobs %}
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; background: white;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h3 style="font-size: 16px; font-weight: 700; color: var(--dark);">{{ item.job.title }}</h3>
+              <span class="badge badge-neutral">{{ item.job.role_type }}</span>
+            </div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+              <b>{{ item.job.company.name }}</b> â€¢ {{ item.job.location }} â€¢ Package: <b>{{ item.job.salary_package }}</b> â€¢ Min CGPA: <b>{{ item.job.min_cgpa }}</b>
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <div style="font-size: 22px; font-weight: 800; color: {% if item.match.overall_match >= 75 %}var(--success){% else %}var(--primary){% endif %};">
+              {{ item.match.overall_match }}%
+            </div>
+            <div style="font-size: 11px; text-transform: uppercase; font-weight:700; color: var(--text-muted);">AI Match Fit</div>
+          </div>
+        </div>
+
+        <div style="margin: 12px 0; font-size: 13px; color: #334155; line-height: 1.5;">
+          {{ item.job.description }}
+        </div>
+
+        <div style="margin-bottom: 12px; font-size: 12.5px;">
+          <span style="font-weight: 700; color: var(--dark);">Required:</span> {{ item.job.required_skills }}<br>
+          <span style="font-weight: 700; color: var(--text-muted);">Preferred:</span> {{ item.job.preferred_skills }}
+        </div>
+
+        <div style="background: #f8fafc; border-left: 3px solid var(--primary); padding: 8px 12px; font-size: 12px; color: #475569; margin-bottom: 14px;">
+          <b>Explainable AI Match Breakdown:</b> {{ item.match.explanation }}
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <a href="{{ url_for('student.skill_gap_analysis', job_id=item.job.id) }}" class="btn btn-outline btn-sm">
+            Detailed Skill Gap Diagnosis
+          </a>
+
+          <div>
+            {% if item.applied_status %}
+              <span class="badge badge-success">Application Status: {{ item.applied_status }}</span>
+            {% else %}
+              <form method="POST" action="{{ url_for('student.apply_job', job_id=item.job.id) }}" style="display:inline;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-primary btn-sm">Submit Application</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

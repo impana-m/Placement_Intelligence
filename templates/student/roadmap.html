@@ -1,0 +1,42 @@
+﻿{% extends "base.html" %}
+{% block title %}Career Roadmap | Placement Intelligence{% endblock %}
+{% block page_title %}Personalized Placement Preparation Roadmap{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Placement Milestone Stages</h3>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 14px;">
+    {% for t in tasks %}
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; background: white; display: flex; justify-content: space-between; align-items:center;">
+        <div style="flex: 1;">
+          <div style="display: flex; align-items:center; gap: 10px;">
+            <span class="badge badge-neutral">{{ t.stage }}</span>
+            <h4 style="font-size: 14px; font-weight:700;">{{ t.title }}</h4>
+            <span class="badge {% if t.priority == 'Critical' %}badge-danger{% elif t.priority == 'High' %}badge-warning{% else %}badge-primary{% endif %}">{{ t.priority }}</span>
+          </div>
+          <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">{{ t.description }}</p>
+        </div>
+
+        <div style="display:flex; align-items:center; gap: 16px;">
+          <span class="badge {% if t.status == 'Completed' %}badge-success{% else %}badge-warning{% endif %}">{{ t.status }}</span>
+          <form method="POST" action="{{ url_for('student.roadmap') }}" style="display: flex; gap: 8px;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="task_id" value="{{ t.id }}">
+            <select name="status" class="form-control" style="font-size: 12px; padding: 4px 8px;">
+              <option value="Pending" {% if t.status == 'Pending' %}selected{% endif %}>Pending</option>
+              <option value="In Progress" {% if t.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+              <option value="Completed" {% if t.status == 'Completed' %}selected{% endif %}>Completed</option>
+            </select>
+            <input type="hidden" name="progress" value="{% if t.status == 'Completed' %}100{% else %}50{% endif %}">
+            <button type="submit" class="btn btn-outline btn-sm">Update</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

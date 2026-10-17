@@ -1,0 +1,45 @@
+﻿{% extends "base.html" %}
+{% block title %}Placement Broadcast Radar | Officer{% endblock %}
+{% block page_title %}Placement Drive Broadcast & Eligibility Radar{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h3 style="font-weight: 700; color: #1e293b;">Automated Cohort Broadcast Radar</h3>
+      <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Instantly dispatch drive alerts to students meeting recruitment cutoff criteria.</p>
+    </div>
+    <span class="badge badge-info" style="font-size: 14px; padding: 8px 14px;">{{ total_students }} Registered Students</span>
+  </div>
+</div>
+
+<div class="card" style="max-width: 720px;">
+  <form method="POST" action="{{ url_for('officer.broadcast') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label class="form-label">Broadcast Drive Title</label>
+      <input type="text" name="title" class="form-control" placeholder="e.g. Google Cloud / TechCorp Campus Hiring Drive 2026" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Eligibility CGPA Cutoff</label>
+      <select name="min_cgpa" class="form-control">
+        <option value="6.0">6.0+ CGPA (Open Eligibility)</option>
+        <option value="7.0" selected>7.0+ CGPA (Standard Core Cutoff)</option>
+        <option value="7.5">7.5+ CGPA (Tier 1 Priority)</option>
+        <option value="8.0">8.0+ CGPA (Elite Super-Dream Tier)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Announcement Details & Instructions</label>
+      <textarea name="message" class="form-control" rows="4" placeholder="Dear Students, recruitment applications are now open for this drive. Eligible candidates must complete their ATS profile before Friday..." required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="padding: 12px 24px;">
+      ðŸ“¡ Dispatch Broadcast Notification
+    </button>
+  </form>
+</div>
+{% endblock %}

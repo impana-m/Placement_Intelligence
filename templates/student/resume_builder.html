@@ -1,0 +1,85 @@
+﻿{% extends "base.html" %}
+{% block title %}Interactive ATS Resume Builder | Placement Intelligence{% endblock %}
+{% block page_title %}Interactive ATS Resume Builder & Live Score Optimizer{% endblock %}
+
+{% block actions %}
+  <a href="{{ url_for('student.export_resume_pdf') }}" class="btn btn-primary btn-sm">ðŸ“„ Download ATS PDF Resume</a>
+{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+  <!-- Left Column: Form -->
+  <div class="card">
+    <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 20px;">Profile & Resume Details</h3>
+
+    <form method="POST" action="{{ url_for('student.resume_builder') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label class="form-label">Professional Summary / Bio</label>
+        <textarea name="summary" class="form-control" rows="4" placeholder="Dedicated BCA software engineer experienced in Python, SQL databases, and agile software development...">{{ student.bio or '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Contact Phone</label>
+        <input type="text" name="phone" class="form-control" value="{{ student.phone or '' }}" placeholder="+91 98765 43210">
+      </div>
+
+      <div style="margin: 24px 0 16px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+        <h4 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;">+ Add Technical Capstone Project</h4>
+        <div class="form-group">
+          <input type="text" name="project_title" class="form-control" placeholder="Project Title (e.g. Distributed Task Scheduler)" style="margin-bottom: 8px;">
+          <input type="text" name="project_tech" class="form-control" placeholder="Technologies (e.g. Python, Flask, Redis, Docker)" style="margin-bottom: 8px;">
+          <textarea name="project_desc" class="form-control" rows="2" placeholder="Engineered a fault-tolerant async worker pool that accelerated throughput by 40%..."></textarea>
+        </div>
+      </div>
+
+      <div style="margin: 24px 0 16px; padding-top: 16px; border-top: 1px solid #e2e8f0;">
+        <h4 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;">+ Add Internship / Practical Experience</h4>
+        <div class="form-group">
+          <input type="text" name="intern_company" class="form-control" placeholder="Company Name (e.g. CloudTech Systems)" style="margin-bottom: 8px;">
+          <input type="text" name="intern_role" class="form-control" placeholder="Role (e.g. Backend Engineering Intern)" style="margin-bottom: 8px;">
+          <textarea name="intern_desc" class="form-control" rows="2" placeholder="Designed REST APIs and automated unit tests for microservices pipeline..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+        ðŸ’¾ Save & Recalculate ATS Score
+      </button>
+    </form>
+  </div>
+
+  <!-- Right Column: ATS Live Score Card -->
+  <div>
+    <div class="card" style="text-align: center; margin-bottom: 24px;">
+      <div style="font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase;">Live ATS Match Score</div>
+      <div style="font-size: 54px; font-weight: 800; color: {% if ats_score >= 75 %}var(--success){% elif ats_score >= 50 %}var(--warning){% else %}var(--danger){% endif %}; margin: 10px 0;">
+        {{ ats_score }}%
+      </div>
+      <p style="font-size: 13px; color: #475569;">
+        {% if ats_score >= 75 %}
+          â­ High ATS Compatibility for campus software engineering roles!
+        {% else %}
+          âš¡ Add quantifiable project metrics and verified technical skills to improve ATS ranking.
+        {% endif %}
+      </p>
+    </div>
+
+    <div class="card">
+      <h4 style="font-weight: 700; color: #1e293b; margin-bottom: 12px;">Current Resume Assets</h4>
+      <div style="font-size: 13px; color: #475569; line-height: 1.8;">
+        <div><b>Technical Skills:</b> {{ student.student_skills|length }} verified</div>
+        <div><b>Projects Listed:</b> {{ student.projects|length }} projects</div>
+        <div><b>Internships:</b> {{ student.internships|length }} records</div>
+        <div><b>Academic CGPA:</b> {{ student.cgpa }} / 10.0</div>
+      </div>
+
+      <div style="margin-top: 18px;">
+        <a href="{{ url_for('student.export_resume_pdf') }}" class="btn btn-outline btn-sm" style="width: 100%; text-align: center;">
+          Download ATS Formatted PDF
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
